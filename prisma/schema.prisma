@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  OFFICER
+  REVIEWER
+  ADMIN
+}
+
+model User {
+  username  String   @id
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(USER)
+  createdDt DateTime @default(now())
+  createBy  String
+
+  loans Loan[]
+}
+
+model Loan {
+  id          String     @id @default(uuid())
+  amount      Float
+  reason      String
+  // status      LoanStatus @default(PENDING)
+  status      String @default("100")
+  createBy    String
+  createDt    DateTime   @default(now())
+  reviewedBy  String?
+  reviewedDt  DateTime?
+  reviewedDes String?
+
+  user User @relation(fields: [createBy], references: [username])
+}
+
+// enum LoanStatus {
+//   PENDING
+//   APPROVED
+//   REJECTED
+// }
+
+model Config {
+  id       String   @id @default(uuid())
+  des_type String
+  des_code String
+  des_name String
+  status   String   @default("A")
+  createBy String
+  createDt DateTime @default(now())
+
+  @@unique([des_type, des_code])
+}

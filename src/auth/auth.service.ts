@@ -95,4 +95,22 @@ export class AuthService {
   private refreshTtlSeconds() {
     return 7 * 24 * 60 * 60
   }
+
+  async resetPassword(username: string, newPassword: string) {
+    const user = await this.prisma.user.findFirst({ where: { username } })
+    if (!user) {
+      throw new UnauthorizedException('User not found')
+    }
+
+    const hashPassword: string = await bcrypt.hash(newPassword, 10)
+    await this.prisma.user.update({
+      where: { username },
+      data: { password: hashPassword },
+    })
+
+    // Invalidate existing refresh tokens
+    await this.redis.del(`refreshToken:${username}`)
+
+    return { message: 'Password reset successfully' }
+  }
 }

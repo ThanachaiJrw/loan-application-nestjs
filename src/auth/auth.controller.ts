@@ -7,6 +7,7 @@ import { ResponseUserDto } from 'src/user/dto/response-user.dto'
 import { ResponseUtils } from 'src/common/utils/response.utils'
 import { ResponseMessage } from 'src/common/constants/response-message.constant'
 import { JwtPayload } from './types/auth.types'
+import { User } from 'src/common/decorators/user.decorator'
 
 @Controller('auth')
 export class AuthController {
@@ -14,9 +15,9 @@ export class AuthController {
 
   @UseGuards(AuthGuard('local'))
   @Post('login')
-  login(@Request() req: ResponseUserDto, @Body() loginDto: LoginDto) {
-    // return this.authService.login(req)
-    return ResponseUtils.success(this.authService.isssueTokens(req), ResponseMessage.SUCCESS)
+  async login(@Request() req: ResponseUserDto, @Body() loginDto: LoginDto) {
+    const response = await this.authService.isssueTokens(req)
+    return ResponseUtils.success(response, ResponseMessage.SUCCESS)
   }
 
   @Post('refresh')
@@ -26,13 +27,21 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post('logout')
-  async logout(@Request() req: JwtPayload) {
-    const username = req.sub
+  async logout(@User('sub') username: string) {
     if (username) {
       await this.authService.logout(username)
       return ResponseUtils.success(null, ResponseMessage.SUCCESS)
     } else {
       return ResponseUtils.error('Invalid user')
     }
+  }
+
+  // @UseGuards(AdminAuthGuard)
+  @Post('reset-password')
+  async resetPassword(
+    @Body('username') username: string,
+    @Body('newPassword') newPassword: string,
+  ) {
+    return this.authService.resetPassword(username, newPassword)
   }
 }

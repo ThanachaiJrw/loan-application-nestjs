@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   // output   = "../generated/prisma"
@@ -23,45 +17,153 @@ enum Role {
 
 model User {
   username  String   @id
-  email     String   @unique
   password  String
-  name      String
   role      Role     @default(USER)
-  createdDt DateTime @default(now())
+  email     String   @unique
+  name      String
   createBy  String
+  createdDt DateTime @default(now())
 
-  loans Loan[]
+  createLoans LoanApplication[] @relation("LoanCreateBy")
+  updateLoans LoanApplication[] @relation("LoanUpdateBy")
+  createActions LoanAppAction[] @relation("ActionCreateBy")
+  updateActions LoanAppAction[] @relation("ActionUpdateBy")
+  createCustomer Customer[] @relation("CustomerCreateBy")
+  updateCustomer Customer[] @relation("CustomerUpdateBy")
+  createAttachments LoanAttachment[] @relation("AttachUploadBy")
+  @@map("public.users")
 }
 
-model Loan {
-  id          String     @id @default(uuid())
-  amount      Float
-  reason      String
-  // status      LoanStatus @default(PENDING)
+model LoanApplication {
+  app_no          String     @id @default(uuid())
+  customer_no  String
+  loan_amt      Float
   status      String @default("100")
-  createBy    String
-  createDt    DateTime   @default(now())
-  reviewedBy  String?
-  reviewedDt  DateTime?
-  reviewedDes String?
+  create_by    String
+  create_dt    DateTime   @default(now())
+  update_by    String?
+  update_dt    DateTime?
 
-  user User @relation(fields: [createBy], references: [username])
+  loanAppActions LoanAppAction[]
+  loanAppAttachments LoanAttachment[]
+  customer Customer @relation(fields: [customer_no], references: [customer_no])
+  createBy User @relation("LoanCreateBy",fields: [create_by], references: [username])
+  updateBy User? @relation("LoanUpdateBy",fields: [update_by], references: [username])
+  @@map("public.loan_applications")
 }
 
-// enum LoanStatus {
-//   PENDING
-//   APPROVED
-//   REJECTED
+model LoanAppAction {
+  action_id  String      @id @default(uuid())
+  app_no     String
+  seq     Int
+  action_type String
+  desc       String
+  create_by  String
+  create_dt  DateTime    @default(now())
+  update_by  String?
+  update_dt  DateTime?
+
+  loanApp LoanApplication @relation(fields: [app_no], references: [app_no])
+  createBy User @relation("ActionCreateBy",fields: [create_by], references: [username])
+  updateBy User? @relation("ActionUpdateBy",fields: [update_by], references: [username])
+  @@map("public.loan_app_actions")
+}
+
+model LoanAttachment {
+  attachment_id String   @id @default(uuid())
+  app_no      String
+  seq         Int
+  doc_type    String //
+  file_name   String
+  file_path   String
+  file_type   String
+  uploaded_by   String
+  uploaded_dt   DateTime @default(now())
+
+  loanApp LoanApplication @relation(fields: [app_no], references: [app_no])
+  updloadedBy User @relation("AttachUploadBy",fields: [uploaded_by], references: [username])
+  @@map("public.loan_attachments")
+}
+
+model Customer {
+  customer_no String   @id
+  customer_name String
+  id_card     String   @unique
+  dob         DateTime
+  phone       String
+  email       String   @unique
+  address     String
+  province     String
+  district     String
+  subdistrict  String
+  create_by    String
+  create_dt    DateTime @default(now())
+  update_by    String?
+  update_dt    DateTime?
+
+  loanApps LoanApplication[]
+  createBy User @relation("CustomerCreateBy",fields: [create_by], references: [username])
+  updateBy User? @relation("CustomerUpdateBy",fields: [update_by], references: [username])
+  @@map("public.customer_info")
+}
+
+// fix tomorrow and dr diagram
+// model Province {
+//   province_code String @id
+//   province_th_name String
+//   province_en_name String
+//   region String
+//   record_status String
+
+//   districts District[]
+//   subdistricts Subdistrict[]
+//   postcodes Postcode[]
+//   @@map("public.provinces")
+// }
+// model District {
+//   district_code String @id
+//   district_th_name String
+//   district_en_name String
+//   province_code String
+//   record_status String
+
+//   subdistricts Subdistrict[]
+//   postcodes Postcode[]
+//   province Province @relation(fields: [province_code], references: [province_code])
+//   @@map("public.districts")
 // }
 
-model Config {
-  id       String   @id @default(uuid())
-  des_type String
-  des_code String
-  des_name String
-  status   String   @default("A")
-  createBy String
-  createDt DateTime @default(now())
+// model Subdistrict {
+//   subdistrict_code String @id
+//   subdistrict_th_name String
+//   subdistrict_en_name String
+//   province_code String
+//   district_code String
+//   record_status String
 
-  @@unique([des_type, des_code])
+//   postcodes Postcode[]
+//   province Province @relation(fields: [province_code], references: [province_code])
+//   district District @relation(fields: [district_code], references: [district_code])
+//   @@map("public.subdistricts")
+// }
+
+// model Postcode {
+//   postcode String @id
+//   province_code String
+//   district_code String
+//   subdistrict_code String
+
+//   province Province @relation(fields: [province_code], references: [province_code])
+//   district District @relation(fields: [district_code], references: [district_code])
+//   subdistrict Subdistrict @relation(fields: [subdistrict_code], references: [subdistrict_code])
+//   @@map("public.postcodes")
+// }
+
+
+model Sequence {
+  id      String   @id
+  prefix  String //LN CM
+  next_val  Int
+  updated_dt DateTime @default(now()) @updatedAt
+  @@map("public.sequences")
 }

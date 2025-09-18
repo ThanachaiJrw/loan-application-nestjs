@@ -15,15 +15,6 @@ async function main() {
       role: 'ADMIN',
     },
   })
-
-  // 2. Create config values
-  await prisma.config.createMany({
-    data: [
-      { des_type: 'STATUS', des_code: '100', des_name: 'PENDING', status: 'A', createBy: 'admin' },
-      { des_type: 'STATUS', des_code: '200', des_name: 'APPROVED', status: 'A', createBy: 'admin' },
-      { des_type: 'STATUS', des_code: '999', des_name: 'REJECTED', status: 'A', createBy: 'admin' },
-    ],
-  })
 }
 
 main()

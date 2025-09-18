@@ -17,10 +17,10 @@ export class AuthController {
   @Post('login')
   async login(@Request() req: ResponseUserDto, @Body() loginDto: LoginDto) {
     const response = await this.authService.isssueTokens(req)
-    return ResponseUtils.success(response, ResponseMessage.SUCCESS)
+    return ResponseUtils.success(response, ResponseMessage.LOGIN)
   }
 
-  @Post('refresh')
+  @Post('refresh-token')
   async refreshTokens(@Body() body: { username: string; refreshToken: string }) {
     return this.authService.refreshTokens(body.username, body.refreshToken)
   }

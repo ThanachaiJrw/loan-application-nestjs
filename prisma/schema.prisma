@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  // output   = "../generated/prisma"
 }
 
 datasource db {
@@ -10,8 +9,9 @@ datasource db {
 
 enum Role {
   USER
-  OFFICER
-  REVIEWER
+  MAKER
+  CHECKER
+  APPROVER
   ADMIN
 }
 
@@ -31,7 +31,7 @@ model User {
   createCustomer Customer[] @relation("CustomerCreateBy")
   updateCustomer Customer[] @relation("CustomerUpdateBy")
   createAttachments LoanAttachment[] @relation("AttachUploadBy")
-  @@map("public.users")
+  @@map("loan_users")
 }
 
 model LoanApplication {
@@ -49,7 +49,7 @@ model LoanApplication {
   customer Customer @relation(fields: [customer_no], references: [customer_no])
   createBy User @relation("LoanCreateBy",fields: [create_by], references: [username])
   updateBy User? @relation("LoanUpdateBy",fields: [update_by], references: [username])
-  @@map("public.loan_applications")
+  @@map("loan_applications")
 }
 
 model LoanAppAction {
@@ -66,7 +66,7 @@ model LoanAppAction {
   loanApp LoanApplication @relation(fields: [app_no], references: [app_no])
   createBy User @relation("ActionCreateBy",fields: [create_by], references: [username])
   updateBy User? @relation("ActionUpdateBy",fields: [update_by], references: [username])
-  @@map("public.loan_app_actions")
+  @@map("loan_app_actions")
 }
 
 model LoanAttachment {
@@ -82,7 +82,7 @@ model LoanAttachment {
 
   loanApp LoanApplication @relation(fields: [app_no], references: [app_no])
   updloadedBy User @relation("AttachUploadBy",fields: [uploaded_by], references: [username])
-  @@map("public.loan_attachments")
+  @@map("loan_attachments")
 }
 
 model Customer {
@@ -104,60 +104,52 @@ model Customer {
   loanApps LoanApplication[]
   createBy User @relation("CustomerCreateBy",fields: [create_by], references: [username])
   updateBy User? @relation("CustomerUpdateBy",fields: [update_by], references: [username])
-  @@map("public.customer_info")
+  @@map("customer_info")
 }
 
 // fix tomorrow and dr diagram
-// model Province {
-//   province_code String @id
-//   province_th_name String
-//   province_en_name String
-//   region String
-//   record_status String
+model Geography {
+  geo_no String @id
+  name String
 
-//   districts District[]
-//   subdistricts Subdistrict[]
-//   postcodes Postcode[]
-//   @@map("public.provinces")
-// }
-// model District {
-//   district_code String @id
-//   district_th_name String
-//   district_en_name String
-//   province_code String
-//   record_status String
+  province Province[]
+  @@map("geographies")
+}
+model Province {
+  province_no String @id
+  province_code String @unique
+  province_th_name String
+  province_en_name String
+  geo_no String
 
-//   subdistricts Subdistrict[]
-//   postcodes Postcode[]
-//   province Province @relation(fields: [province_code], references: [province_code])
-//   @@map("public.districts")
-// }
+  geography Geography @relation(fields: [geo_no], references: [geo_no])
+  districts District[]
+  @@map("provinces")
+}
 
-// model Subdistrict {
-//   subdistrict_code String @id
-//   subdistrict_th_name String
-//   subdistrict_en_name String
-//   province_code String
-//   district_code String
-//   record_status String
+model District {
+  district_no String @id
+  district_code String @unique
+  district_th_name String
+  district_en_name String
+  province_no String
 
-//   postcodes Postcode[]
-//   province Province @relation(fields: [province_code], references: [province_code])
-//   district District @relation(fields: [district_code], references: [district_code])
-//   @@map("public.subdistricts")
-// }
+  subdistricts Subdistrict[]
+  province Province @relation(fields: [province_no], references: [province_no])
+  @@map("districts")
+}
 
-// model Postcode {
-//   postcode String @id
-//   province_code String
-//   district_code String
-//   subdistrict_code String
+model Subdistrict {
+  subdistricts_no String @id
+  zip_code String
+  subdistrict_th_name String
+  subdistrict_en_name String
+  district_no String
 
-//   province Province @relation(fields: [province_code], references: [province_code])
-//   district District @relation(fields: [district_code], references: [district_code])
-//   subdistrict Subdistrict @relation(fields: [subdistrict_code], references: [subdistrict_code])
-//   @@map("public.postcodes")
-// }
+  district District @relation(fields: [district_no], references: [district_no])
+  @@map("subdistricts")
+}
+
 
 
 model Sequence {
@@ -165,5 +157,5 @@ model Sequence {
   prefix  String //LN CM
   next_val  Int
   updated_dt DateTime @default(now()) @updatedAt
-  @@map("public.sequences")
+  @@map("sequences_config")
 }

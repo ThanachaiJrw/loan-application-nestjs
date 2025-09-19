@@ -3,10 +3,11 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { UserModule } from './user/user.module'
 import { AuthModule } from './auth/auth.module'
-import { RedisModule } from './redis/redis.module';
+import { RedisModule } from './redis/redis.module'
+import { GeographyModule } from './geography/geography.module'
 
 @Module({
-  imports: [UserModule, AuthModule, RedisModule],
+  imports: [UserModule, AuthModule, RedisModule, GeographyModule],
   controllers: [AppController],
   providers: [AppService],
 })

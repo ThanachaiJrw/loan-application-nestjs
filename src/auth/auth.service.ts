@@ -7,7 +7,7 @@ import * as bcrypt from 'bcrypt'
 import { ResponseUserDto } from 'src/user/dto/response-user.dto'
 import Redis from 'ioredis'
 import { JwtPayload } from './types/auth.types'
-import { Role } from 'generated/prisma'
+import { Role } from '@prisma/client'
 
 @Injectable()
 export class AuthService {

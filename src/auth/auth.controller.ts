@@ -16,15 +16,15 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
   //  เหมือนจะผิด ต้องแก้ภายหลัง
-  async login(@Request() req: ResponseUserDto, @Body() loginDto: LoginDto) {
+  async login(@User() req: ResponseUserDto, @Body() loginDto: LoginDto) {
     const response = await this.authService.isssueTokens(req)
     return ResponseUtils.success(response, ResponseMessage.LOGIN)
   }
 
-  @Post('refresh-token')
-  async refreshTokens(@Body() body: { username: string; refreshToken: string }) {
-    return this.authService.refreshTokens(body.username, body.refreshToken)
-  }
+  // @Post('refresh-token')
+  // async refreshTokens(@Body() body: { username: string; refreshToken: string }) {
+  //   return this.authService.refreshTokens(body.username, body.refreshToken)
+  // }
 
   @UseGuards(AuthGuard('jwt'))
   @Post('logout')

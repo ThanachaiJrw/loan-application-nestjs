@@ -4,15 +4,23 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-  // 1. Create admin user
-  await prisma.user.create({
-    data: {
-      username: 'admin',
-      email: 'admin@mail.com',
-      password: 'hashedpass123',
-      name: 'ADMIN',
-      createBy: 'System',
-      role: 'ADMIN',
+  await prisma.sequence.upsert({
+    where: { id: 'CUSTOMER' },
+    update: {},
+    create: {
+      id: 'CUSTOMER',
+      prefix: 'CM',
+      nextVal: 1,
+    },
+  })
+
+  await prisma.sequence.upsert({
+    where: { id: 'LOAN' },
+    update: {},
+    create: {
+      id: 'LOAN',
+      prefix: 'LN',
+      nextVal: 1,
     },
   })
 }

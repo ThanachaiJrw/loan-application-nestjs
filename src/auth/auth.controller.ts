@@ -3,7 +3,7 @@ import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { LoginDto } from './dto/login.dto'
 import { AuthGuard } from '@nestjs/passport'
-import { ResponseUserDto } from 'src/user/dto/response-user.dto'
+import { ResponseUserDto } from 'src/user/dto/user.response.dto'
 import { ResponseUtils } from 'src/common/utils/response.utils'
 import { ResponseMessage } from 'src/common/constants/response-message.constant'
 import { JwtPayload } from './types/auth.types'
@@ -15,6 +15,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard('local'))
   @Post('login')
+  //  เหมือนจะผิด ต้องแก้ภายหลัง
   async login(@Request() req: ResponseUserDto, @Body() loginDto: LoginDto) {
     const response = await this.authService.isssueTokens(req)
     return ResponseUtils.success(response, ResponseMessage.LOGIN)

@@ -16,7 +16,7 @@ import { ResponseUtils } from 'src/common/utils/response.utils'
 import { ResponseMessage } from 'src/common/constants/response-message.constant'
 import { plainToInstance } from 'class-transformer'
 import { User } from '@prisma/client'
-import { ResponseUserDto } from './dto/response-user.dto'
+import { ResponseUserDto } from './dto/user.response.dto'
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('user')

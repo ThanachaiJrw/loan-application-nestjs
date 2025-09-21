@@ -1,5 +1,5 @@
 import { Role } from '@prisma/client'
-import { Expose } from 'class-transformer'
+import { Exclude, Expose } from 'class-transformer'
 
 export class ResponseUserDto {
   @Expose()

@@ -5,9 +5,10 @@ import { UserModule } from './user/user.module'
 import { AuthModule } from './auth/auth.module'
 import { RedisModule } from './redis/redis.module'
 import { GeographyModule } from './geography/geography.module'
+import { CustomerModule } from './customer/customer.module'
 
 @Module({
-  imports: [UserModule, AuthModule, RedisModule, GeographyModule],
+  imports: [UserModule, AuthModule, RedisModule, GeographyModule, CustomerModule],
   controllers: [AppController],
   providers: [AppService],
 })

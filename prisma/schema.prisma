@@ -35,60 +35,60 @@ model User {
 }
 
 model LoanApplication {
-  app_no          String     @id @default(uuid())
-  customer_no  String
-  loan_amt      Float
-  status      String @default("100")
-  create_by    String
-  create_dt    DateTime   @default(now())
-  update_by    String?
-  update_dt    DateTime?
+  appNo          String     @id @default(uuid()) @map("app_no")
+  customerNo  String @map("customer_no")
+  loanAmt       Float @map("loan_amt")
+  status        String @default("100")
+  createBy      String @map("create_by")
+  createDt      DateTime @default(now()) @map("create_dt")
+  updateBy      String? @map("update_by")
+  updateDt      DateTime? @map("update_dt")
 
   loanAppActions LoanAppAction[]
   loanAppAttachments LoanAttachment[]
-  customer Customer @relation(fields: [customer_no], references: [customer_no])
-  createBy User @relation("LoanCreateBy",fields: [create_by], references: [username])
-  updateBy User? @relation("LoanUpdateBy",fields: [update_by], references: [username])
+  customer Customer @relation(fields: [customerNo], references: [customerNo])
+  loanCreateBy User @relation("LoanCreateBy",fields: [createBy], references: [username])
+  loanUpdateBy User? @relation("LoanUpdateBy",fields: [updateBy], references: [username])
   @@map("loan_applications")
 }
 
 model LoanAppAction {
-  action_id  String      @id @default(uuid())
-  app_no     String
+  actionId  String      @id @default(uuid()) @map("action_id")
+  appNo     String @map("app_no")
   seq     Int
-  action_type String
+  actionType String @map("action_type")
   desc       String
-  create_by  String
-  create_dt  DateTime    @default(now())
-  update_by  String?
-  update_dt  DateTime?
+  createBy      String @map("create_by")
+  createDt      DateTime @default(now()) @map("create_dt")
+  updateBy      String? @map("update_by")
+  updateDt      DateTime? @map("update_dt")
 
-  loanApp LoanApplication @relation(fields: [app_no], references: [app_no])
-  createBy User @relation("ActionCreateBy",fields: [create_by], references: [username])
-  updateBy User? @relation("ActionUpdateBy",fields: [update_by], references: [username])
+  loanApp LoanApplication @relation(fields: [appNo], references: [appNo])
+  actionCreateBy User @relation("ActionCreateBy",fields: [createBy], references: [username])
+  actionUpdateBy User? @relation("ActionUpdateBy",fields: [updateBy], references: [username])
   @@map("loan_app_actions")
 }
 
 model LoanAttachment {
-  attachment_id String   @id @default(uuid())
-  app_no      String
+  attachmentId String   @id @default(uuid()) @map("attachment_id")
+  appNo     String @map("app_no")
   seq         Int
-  doc_type    String //
-  file_name   String
-  file_path   String
-  file_type   String
-  uploaded_by   String
-  uploaded_dt   DateTime @default(now())
+  docType    String @map("doc_type")
+  fileName   String @map("file_name")
+  filePath   String @map("file_path")
+  fileType   String @map("file_type")
+  uploadedBy   String @map("uploaded_by")
+  uploadedDt   DateTime @default(now()) @map("uploaded_dt")
 
-  loanApp LoanApplication @relation(fields: [app_no], references: [app_no])
-  updloadedBy User @relation("AttachUploadBy",fields: [uploaded_by], references: [username])
+  loanApp LoanApplication @relation(fields: [appNo], references: [appNo])
+  AttachupdloadedBy User @relation("AttachUploadBy",fields: [uploadedBy], references: [username])
   @@map("loan_attachments")
 }
 
 model Customer {
-  customer_no String   @id
-  customer_name String
-  id_card     String   @unique
+  customerNo String   @id @map("customer_no")
+  customerName String @map("customer_name")
+  idCard     String   @unique @map("id_card")
   dob         DateTime
   phone       String
   email       String   @unique
@@ -96,57 +96,57 @@ model Customer {
   province     String
   district     String
   subdistrict  String
-  create_by    String
-  create_dt    DateTime @default(now())
-  update_by    String?
-  update_dt    DateTime?
+  createBy      String @map("create_by")
+  createDt      DateTime @default(now()) @map("create_dt")
+  updateBy      String? @map("update_by")
+  updateDt      DateTime? @map("update_dt")
 
   loanApps LoanApplication[]
-  createBy User @relation("CustomerCreateBy",fields: [create_by], references: [username])
-  updateBy User? @relation("CustomerUpdateBy",fields: [update_by], references: [username])
+  cusCreateBy User @relation("CustomerCreateBy",fields: [createBy], references: [username])
+  cusUpdateBy User? @relation("CustomerUpdateBy",fields: [updateBy], references: [username])
   @@map("customer_info")
 }
 
 // fix tomorrow and dr diagram
 model Geography {
-  geo_no String @id
+  geoNo String @id @map("geo_no")
   name String
 
   province Province[]
   @@map("geographies")
 }
 model Province {
-  province_no String @id
-  province_code String @unique
-  province_th_name String
-  province_en_name String
-  geo_no String
+  provinceNo String @id @map("province_no")
+  provinceCode String @unique @map("province_code")
+  provinceThName String @map("province_th_name")
+  provinceEnName String @map("province_en_name")
+  geoNo String @map("geo_no")
 
-  geography Geography @relation(fields: [geo_no], references: [geo_no])
+  geography Geography @relation(fields: [geoNo], references: [geoNo])
   districts District[]
   @@map("provinces")
 }
 
 model District {
-  district_no String @id
-  district_code String @unique
-  district_th_name String
-  district_en_name String
-  province_no String
+  districtNo String @id @map("district_no")
+  districtCode String @unique @map("district_code")
+  districtThName String @map("district_th_name")
+  districtEnName String @map("district_en_name")
+  provinceNo String @map("province_no")
 
   subdistricts Subdistrict[]
-  province Province @relation(fields: [province_no], references: [province_no])
+  province Province @relation(fields: [provinceNo], references: [provinceNo])
   @@map("districts")
 }
 
 model Subdistrict {
-  subdistricts_no String @id
-  zip_code String
-  subdistrict_th_name String
-  subdistrict_en_name String
-  district_no String
+  subdistrictsNo String @id @map("subdistricts_no")
+  zipCode String  @map("zip_code")
+  subdistrictThName String @map("subdistrict_th_name")
+  subdistrictEnName String @map("subdistrict_en_name")
+  districtNo String @map("district_no")
 
-  district District @relation(fields: [district_no], references: [district_no])
+  district District @relation(fields: [districtNo], references: [districtNo])
   @@map("subdistricts")
 }
 
@@ -155,7 +155,7 @@ model Subdistrict {
 model Sequence {
   id      String   @id
   prefix  String //LN CM
-  next_val  Int
-  updated_dt DateTime @default(now()) @updatedAt
+  nextVal  Int @map("next_val")
+  updatedDt DateTime @default(now()) @updatedAt @map("updated_dt")
   @@map("sequences_config")
 }

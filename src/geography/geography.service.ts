@@ -10,14 +10,20 @@ export class GeographyService {
   }
 
   async getDistricts(provinceNo: string) {
+    if (provinceNo == undefined || provinceNo == null) {
+      return []
+    }
     return this.prisma.district.findMany({
-      where: { province_no: provinceNo },
+      where: { provinceNo: provinceNo },
     })
   }
 
   async getSubdistricts(districtNo: string) {
+    if (districtNo == undefined || districtNo == null) {
+      return []
+    }
     return this.prisma.subdistrict.findMany({
-      where: { district_no: districtNo },
+      where: { districtNo: districtNo },
     })
   }
 }

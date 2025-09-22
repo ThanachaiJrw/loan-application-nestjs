@@ -32,7 +32,7 @@ export class CustomerController {
     )
   }
 
-  @Get('FindCustomerInfoByCusNo')
+  @Get('findCustomerInfoByCusNo')
   async findCustomerInfoByCusNo(@Body('customerNo') customerNo: string) {
     if (customerNo == null || customerNo == undefined) {
       throw new Error('customerNo is required')

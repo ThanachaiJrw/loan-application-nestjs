@@ -8,6 +8,7 @@ import { ResponseUserDto } from 'src/user/dto/user.response.dto'
 import Redis from 'ioredis'
 import { JwtPayload } from './types/auth.types'
 import { Role } from '@prisma/client'
+import { v4 as uuidv4 } from 'uuid'
 
 @Injectable()
 export class AuthService {
@@ -35,7 +36,9 @@ export class AuthService {
       email: user.email,
       name: user.name || '',
       role: user.role || '',
+      jti: uuidv4(),
     }
+    console.log('########### user.username:', user.username)
 
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_ACCESS_SECRET || 'accessSecret',
@@ -58,12 +61,15 @@ export class AuthService {
   }
 
   async refreshTokens(username: string, refreshToken: string) {
+    console.log('########### Refresh token called for user:', username)
     const storedHash = await this.redis.get(`refreshToken:${username}`)
+    console.log('########### storedHash:', storedHash)
     if (!storedHash) {
       throw new UnauthorizedException('Invalid refresh token')
     }
 
     const isMatch = await bcrypt.compare(refreshToken, storedHash)
+    console.log('########### isMatch:', isMatch)
     if (!isMatch) {
       throw new UnauthorizedException('Invalid refresh token')
     }
@@ -76,6 +82,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token')
     }
 
+    console.log('########### decoded:', decoded)
     return this.isssueTokens(
       {
         username: decoded.sub,

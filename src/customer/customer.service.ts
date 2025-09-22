@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'prisma/prisma.service'
 import { CustomerRequestDto } from './dto/customer.request.dto'
 import { Customer, Prisma, Sequence } from '@prisma/client'
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class CustomerService {
@@ -13,11 +14,12 @@ export class CustomerService {
       if (customerNo == null || customerNo == undefined) {
         throw new Error('Failed to generate customer number')
       }
+      const hashID: string = await bcrypt.hash(req.idCard, 10)
       return await prisma.customer.create({
         data: {
           customerNo: customerNo,
           customerName: req.name,
-          idCard: req.idCard,
+          idCard: hashID,
           dob: req.birthDate || new Date(),
           phone: req.phone,
           email: req.email,
@@ -25,7 +27,7 @@ export class CustomerService {
           province: req.provinceNo,
           district: req.districtNo,
           subdistrict: req.subdistrictNo,
-          // postcode: req.postalCode, //forget
+          postcode: req.postalCode, //forget
           createBy: username,
           createDt: new Date(),
         },

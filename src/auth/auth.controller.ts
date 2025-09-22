@@ -21,10 +21,11 @@ export class AuthController {
     return ResponseUtils.success(response, ResponseMessage.LOGIN)
   }
 
-  // @Post('refresh-token')
-  // async refreshTokens(@Body() body: { username: string; refreshToken: string }) {
-  //   return this.authService.refreshTokens(body.username, body.refreshToken)
-  // }
+  @Post('refresh-token')
+  async refreshTokens(@Body() body: { username: string; refreshToken: string }) {
+    const response = await this.authService.refreshTokens(body.username, body.refreshToken)
+    return ResponseUtils.success(response, ResponseMessage.LOGIN)
+  }
 
   @UseGuards(AuthGuard('jwt'))
   @Post('logout')

@@ -100,6 +100,7 @@ model Customer {
   createDt      DateTime @default(now()) @map("create_dt")
   updateBy      String? @map("update_by")
   updateDt      DateTime? @map("update_dt")
+  postcode     String
 
   loanApps LoanApplication[]
   cusCreateBy User @relation("CustomerCreateBy",fields: [createBy], references: [username])

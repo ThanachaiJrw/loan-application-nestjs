@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common'
@@ -33,7 +34,7 @@ export class CustomerController {
   }
 
   @Get('findCustomerInfoByCusNo')
-  async findCustomerInfoByCusNo(@Body('customerNo') customerNo: string) {
+  async findCustomerInfoByCusNo(@Query('customerNo') customerNo: string) {
     if (customerNo == null || customerNo == undefined) {
       throw new Error('customerNo is required')
     }

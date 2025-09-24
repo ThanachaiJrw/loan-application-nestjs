@@ -89,18 +89,18 @@ model Customer {
   customerNo String   @id @map("customer_no")
   customerName String @map("customer_name")
   idCard     String   @unique @map("id_card")
-  dob         DateTime
-  phone       String
+  dob         DateTime?
+  phone       String?
   email       String   @unique
-  address     String
-  province     String
-  district     String
-  subdistrict  String
+  address     String?
+  province     String?
+  district     String?
+  subdistrict  String?
   createBy      String @map("create_by")
   createDt      DateTime @default(now()) @map("create_dt")
   updateBy      String? @map("update_by")
   updateDt      DateTime? @map("update_dt")
-  postcode     String
+  postcode     String?
 
   loanApps LoanApplication[]
   cusCreateBy User @relation("CustomerCreateBy",fields: [createBy], references: [username])

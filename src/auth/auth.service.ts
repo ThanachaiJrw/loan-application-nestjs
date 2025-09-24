@@ -52,16 +52,21 @@ export class AuthService {
         : process.env.JWT_REFRESH_EXPIRES || '7d', // 7 วัน
     })
 
+    console.log('########### set refreshToken:', refreshToken)
     const hash = await bcrypt.hash(refreshToken, 10)
     // Store the hashed refresh token in Redis with an expiration time
     const key = `refreshToken:${user.username}`
+    console.log('########### set refreshToken hash :', hash)
     await this.redis.set(key, hash, 'EX', this.refreshTtlSeconds())
 
     return { accessToken, refreshToken }
   }
 
+  // can't fix refresh token issue
+  // refresh token can match every refresh token before
   async refreshTokens(username: string, refreshToken: string) {
-    console.log('########### Refresh token called for user:', username)
+    console.log('############################################')
+    console.log('\n ########### Refresh token called for user:', username)
     const storedHash = await this.redis.get(`refreshToken:${username}`)
     console.log('########### storedHash:', storedHash)
     if (!storedHash) {
@@ -73,6 +78,7 @@ export class AuthService {
     if (!isMatch) {
       throw new UnauthorizedException('Invalid refresh token')
     }
+    await this.redis.del(`refreshToken:${username}`)
 
     const decoded = await this.jwtService.verifyAsync<JwtPayload>(refreshToken, {
       secret: process.env.JWT_REFRESH_SECRET,

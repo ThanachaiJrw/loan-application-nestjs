@@ -1,12 +1,13 @@
-import { IsNotEmpty } from 'class-validator'
+import { IsDateString, IsNotEmpty } from 'class-validator'
 
 export class CustomerRequestDto {
   @IsNotEmpty()
   name: string
   @IsNotEmpty()
   idCard: string
-  // @IsNotEmpty()
-  birthDate?: Date | null
+  @IsNotEmpty()
+  @IsDateString()
+  birthDate: string
   @IsNotEmpty()
   email: string
   @IsNotEmpty()

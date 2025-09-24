@@ -3,6 +3,8 @@ import { PrismaService } from 'prisma/prisma.service'
 import { CustomerRequestDto } from './dto/customer.request.dto'
 import { Customer, Prisma, Sequence } from '@prisma/client'
 import * as bcrypt from 'bcrypt'
+import { CustomerResponseDto } from './dto/customer.response.dto'
+import { plainToInstance } from 'class-transformer'
 
 @Injectable()
 export class CustomerService {
@@ -20,7 +22,7 @@ export class CustomerService {
           customerNo: customerNo,
           customerName: req.name,
           idCard: hashID,
-          dob: req.birthDate || new Date(),
+          dob: req.birthDate ? new Date(req.birthDate) : null,
           phone: req.phone,
           email: req.email,
           address: req.address,
@@ -52,9 +54,20 @@ export class CustomerService {
     return null
   }
 
-  findByCustomerNo(customerNo: string): Promise<Customer | null> {
-    return this.prisma.customer.findUnique({
+  async findByCustomerNo(customerNo: string): Promise<CustomerResponseDto | null> {
+    if (customerNo == null || customerNo == undefined) {
+      throw new Error('customerNo is required')
+    }
+
+    const res: Customer | null = await this.prisma.customer.findUnique({
       where: { customerNo: customerNo },
     })
+    if (!res) {
+      return null
+    }
+
+    const responseDto = plainToInstance(CustomerResponseDto, res, { excludeExtraneousValues: true })
+
+    return responseDto
   }
 }

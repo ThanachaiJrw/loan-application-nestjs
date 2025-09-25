@@ -1,5 +1,6 @@
 export const ResponseMessage = {
   LOGIN: 'Login สำเร็จ',
+  OK: 'OK',
   SUCCESS: 'บันทึกข้อมูลสำเร็จ',
   NOT_FOUND: 'ไม่พบข้อมูลในระบบ',
   INTERNAL_ERROR: 'เกิดข้อผิดพลาดในระบบ กรุณาติดต่อผู้ดูแลระบบ',

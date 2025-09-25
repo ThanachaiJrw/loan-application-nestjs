@@ -15,10 +15,12 @@ import { ResponseUtils } from 'src/common/utils/response.utils'
 import { ResponseMessage } from 'src/common/constants/response-message.constant'
 import { AuthGuard } from '@nestjs/passport'
 import { JwtPayload } from 'src/auth/types/auth.types'
+import { RolesGuard } from 'src/auth/guards/roles.guards'
+import { APPROVER, CHECKER, MAKER, Roles } from 'src/common/decorators/roles.decorator'
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('customer')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
 
@@ -33,6 +35,7 @@ export class CustomerController {
     )
   }
 
+  @Roles(MAKER, CHECKER, APPROVER)
   @Get('findCustomerInfoByCusNo')
   async findCustomerInfoByCusNo(@Query('customerNo') customerNo: string) {
     if (customerNo == null || customerNo == undefined) {
@@ -40,7 +43,7 @@ export class CustomerController {
     }
     return ResponseUtils.success(
       await this.customerService.findByCustomerNo(customerNo),
-      ResponseMessage.SUCCESS,
+      ResponseMessage.OK,
     )
   }
 }

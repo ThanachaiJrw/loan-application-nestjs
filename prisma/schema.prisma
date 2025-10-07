@@ -7,18 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  MAKER
-  CHECKER
-  APPROVER
-  ADMIN
-}
 
 model User {
   username  String   @id
   password  String
-  role      Role     @default(USER)
+  role      Role     @relation(fields: [roleId], references: [roleId])
+  roleId    Int
   email     String   @unique
   name      String
   createBy  String
@@ -33,6 +27,35 @@ model User {
   createAttachments LoanAttachment[] @relation("AttachUploadBy")
   @@map("loan_users")
 }
+
+model Role {
+  roleId    Int    @id @default(autoincrement()) @map("role_id")
+  roleName  String @unique @map("role_name")
+  roleDesc  String? @map("role_desc")
+  users User[]
+  permissions Permission[] @relation("RolePermissions")
+  @@map("roles")
+}
+
+model Permission {
+  permissionId Int    @id @default(autoincrement()) @map("permission_id")
+  permissionName String @unique @map("permission_name")
+  permissionDesc String? @map("permission_desc")
+  roles Role[] @relation("RolePermissions")
+  @@map("permissions")
+}
+
+model Menu {
+  menuId   Int    @id @default(autoincrement()) @map("menu_id")
+  menuLabel String @unique @map("menu_label")
+  route    String?
+  icon     String?
+  parentId Int? @map("parent_id")
+  parent Menu? @relation("MenuHierarchy",fields: [parentId], references: [menuId])
+  children Menu[] @relation("MenuHierarchy")
+  @@map("menus")
+}
+
 
 model LoanApplication {
   appNo          String     @id @default(uuid()) @map("app_no")

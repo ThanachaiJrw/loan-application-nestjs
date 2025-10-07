@@ -1,17 +1,43 @@
--- CreateEnum
-CREATE TYPE "Role" AS ENUM ('USER', 'MAKER', 'CHECKER', 'APPROVER', 'ADMIN');
-
 -- CreateTable
 CREATE TABLE "loan_users" (
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "role" "Role" NOT NULL DEFAULT 'USER',
+    "roleId" INTEGER NOT NULL,
     "email" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "createBy" TEXT NOT NULL,
     "createdDt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "loan_users_pkey" PRIMARY KEY ("username")
+);
+
+-- CreateTable
+CREATE TABLE "roles" (
+    "role_id" SERIAL NOT NULL,
+    "role_name" TEXT NOT NULL,
+    "role_desc" TEXT,
+
+    CONSTRAINT "roles_pkey" PRIMARY KEY ("role_id")
+);
+
+-- CreateTable
+CREATE TABLE "permissions" (
+    "permission_id" SERIAL NOT NULL,
+    "permission_name" TEXT NOT NULL,
+    "permission_desc" TEXT,
+
+    CONSTRAINT "permissions_pkey" PRIMARY KEY ("permission_id")
+);
+
+-- CreateTable
+CREATE TABLE "menus" (
+    "menu_id" SERIAL NOT NULL,
+    "menu_label" TEXT NOT NULL,
+    "route" TEXT,
+    "icon" TEXT,
+    "parent_id" INTEGER,
+
+    CONSTRAINT "menus_pkey" PRIMARY KEY ("menu_id")
 );
 
 -- CreateTable
@@ -63,18 +89,18 @@ CREATE TABLE "customer_info" (
     "customer_no" TEXT NOT NULL,
     "customer_name" TEXT NOT NULL,
     "id_card" TEXT NOT NULL,
-    "dob" TIMESTAMP(3) NOT NULL,
-    "phone" TEXT NOT NULL,
+    "dob" TIMESTAMP(3),
+    "phone" TEXT,
     "email" TEXT NOT NULL,
-    "address" TEXT NOT NULL,
-    "province" TEXT NOT NULL,
-    "district" TEXT NOT NULL,
-    "subdistrict" TEXT NOT NULL,
+    "address" TEXT,
+    "province" TEXT,
+    "district" TEXT,
+    "subdistrict" TEXT,
     "create_by" TEXT NOT NULL,
     "create_dt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "update_by" TEXT,
     "update_dt" TIMESTAMP(3),
-    "postcode" TEXT NOT NULL,
+    "postcode" TEXT,
 
     CONSTRAINT "customer_info_pkey" PRIMARY KEY ("customer_no")
 );
@@ -130,8 +156,25 @@ CREATE TABLE "sequences_config" (
     CONSTRAINT "sequences_config_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "_RolePermissions" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL,
+
+    CONSTRAINT "_RolePermissions_AB_pkey" PRIMARY KEY ("A","B")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "loan_users_email_key" ON "loan_users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "roles_role_name_key" ON "roles"("role_name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "permissions_permission_name_key" ON "permissions"("permission_name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "menus_menu_label_key" ON "menus"("menu_label");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "customer_info_id_card_key" ON "customer_info"("id_card");
@@ -144,6 +187,15 @@ CREATE UNIQUE INDEX "provinces_province_code_key" ON "provinces"("province_code"
 
 -- CreateIndex
 CREATE UNIQUE INDEX "districts_district_code_key" ON "districts"("district_code");
+
+-- CreateIndex
+CREATE INDEX "_RolePermissions_B_index" ON "_RolePermissions"("B");
+
+-- AddForeignKey
+ALTER TABLE "loan_users" ADD CONSTRAINT "loan_users_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "roles"("role_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "menus" ADD CONSTRAINT "menus_parent_id_fkey" FOREIGN KEY ("parent_id") REFERENCES "menus"("menu_id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "loan_applications" ADD CONSTRAINT "loan_applications_customer_no_fkey" FOREIGN KEY ("customer_no") REFERENCES "customer_info"("customer_no") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -184,3 +236,8 @@ ALTER TABLE "districts" ADD CONSTRAINT "districts_province_no_fkey" FOREIGN KEY 
 -- AddForeignKey
 ALTER TABLE "subdistricts" ADD CONSTRAINT "subdistricts_district_no_fkey" FOREIGN KEY ("district_no") REFERENCES "districts"("district_no") ON DELETE RESTRICT ON UPDATE CASCADE;
 
+-- AddForeignKey
+ALTER TABLE "_RolePermissions" ADD CONSTRAINT "_RolePermissions_A_fkey" FOREIGN KEY ("A") REFERENCES "permissions"("permission_id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_RolePermissions" ADD CONSTRAINT "_RolePermissions_B_fkey" FOREIGN KEY ("B") REFERENCES "roles"("role_id") ON DELETE CASCADE ON UPDATE CASCADE;

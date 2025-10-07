@@ -11,7 +11,7 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.get<string[]>(ROLES_KEY, context.getHandler())
+    const requiredRoles = this.reflector.get<number[]>(ROLES_KEY, context.getHandler())
     if (!requiredRoles) {
       return true
     }
@@ -19,7 +19,7 @@ export class RolesGuard implements CanActivate {
     const request = context.switchToHttp().getRequest()
     const user: JwtPayload = request.user
 
-    if (user.role === 'admin') return true
+    if (user.role === 1) return true
     if (!user || !user.role || !requiredRoles.includes(user.role)) {
       throw ResponseUtils.forbideden()
     }

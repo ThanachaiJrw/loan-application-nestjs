@@ -15,7 +15,6 @@ export class AuthController {
 
   @UseGuards(AuthGuard('local'))
   @Post('login')
-  //  เหมือนจะผิด ต้องแก้ภายหลัง
   async login(@User() req: ResponseUserDto, @Body() loginDto: LoginDto) {
     const response = await this.authService.isssueTokens(req)
     return ResponseUtils.success(response, ResponseMessage.LOGIN)

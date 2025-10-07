@@ -1,4 +1,3 @@
-import { Role } from '@prisma/client'
 import { Exclude, Expose } from 'class-transformer'
 
 export class ResponseUserDto {
@@ -9,5 +8,5 @@ export class ResponseUserDto {
   @Expose()
   name?: string
   @Expose()
-  role?: Role
+  roleId?: number
 }

@@ -35,7 +35,7 @@ export class AuthService {
       sub: user.username,
       email: user.email,
       name: user.name || '',
-      role: user.roleId,
+      roleId: user.roleId,
       jti: uuidv4(),
     }
     console.log('########### user.username:', user.username)
@@ -94,7 +94,7 @@ export class AuthService {
         username: decoded.sub,
         email: decoded.email,
         name: decoded.name || '',
-        roleId: decoded.role,
+        roleId: decoded.roleId,
       },
       decoded.exp,
     )

@@ -15,12 +15,13 @@ import { ResponseUtils } from 'src/common/utils/response.utils'
 import { ResponseMessage } from 'src/common/constants/response-message.constant'
 import { AuthGuard } from '@nestjs/passport'
 import { JwtPayload } from 'src/auth/types/auth.types'
-import { RolesGuard } from 'src/auth/guards/roles.guards'
-import { APPROVER, CHECKER, MAKER, Roles } from 'src/common/decorators/roles.decorator'
+import { PermissionsGuard } from 'src/auth/guards/permissions.guard'
+import { Permissions } from 'src/common/decorators/permission.decorator'
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('customer')
-@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Permissions('VIEW_LOAN', 'REVIEW_LOAN', 'APPROVE_LOAN', 'CREATE_LOAN')
+@UseGuards(AuthGuard('jwt'), PermissionsGuard)
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
 
@@ -35,7 +36,6 @@ export class CustomerController {
     )
   }
 
-  @Roles(MAKER, CHECKER, APPROVER)
   @Get('findCustomerInfoByCusNo')
   async findCustomerInfoByCusNo(@Query('customerNo') customerNo: string) {
     if (customerNo == null || customerNo == undefined) {

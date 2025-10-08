@@ -42,6 +42,7 @@ model Permission {
   permissionName String @unique @map("permission_name")
   permissionDesc String? @map("permission_desc")
   roles Role[] @relation("RolePermissions")
+  menu Menu[] @relation("MenuPermissions")
   @@map("permissions")
 }
 
@@ -53,6 +54,7 @@ model Menu {
   parentId Int? @map("parent_id")
   parent Menu? @relation("MenuHierarchy",fields: [parentId], references: [menuId])
   children Menu[] @relation("MenuHierarchy")
+  permission Permission[] @relation("MenuPermissions")
   @@map("menus")
 }
 

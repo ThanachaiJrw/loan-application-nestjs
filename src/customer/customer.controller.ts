@@ -3,6 +3,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  InternalServerErrorException,
   Post,
   Query,
   UseGuards,
@@ -28,7 +29,7 @@ export class CustomerController {
   @Post('createCustomer')
   async createCustomer(@User() user: JwtPayload, @Body() body: CustomerRequestDto) {
     if (body == null || body == undefined) {
-      throw new Error('Request body is required')
+      throw new InternalServerErrorException('Request body is required')
     }
     return ResponseUtils.success(
       await this.customerService.createCustomer(body, user.sub),
@@ -39,7 +40,7 @@ export class CustomerController {
   @Get('findCustomerInfoByCusNo')
   async findCustomerInfoByCusNo(@Query('customerNo') customerNo: string) {
     if (customerNo == null || customerNo == undefined) {
-      throw new Error('customerNo is required')
+      throw new InternalServerErrorException('customerNo is required')
     }
     return ResponseUtils.success(
       await this.customerService.findByCustomerNo(customerNo),

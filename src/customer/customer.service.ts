@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { PrismaService } from 'prisma/prisma.service'
 import { CustomerRequestDto } from './dto/customer.request.dto'
 import { Customer, Prisma, Sequence } from '@prisma/client'
@@ -14,7 +14,7 @@ export class CustomerService {
     return await this.prisma.$transaction(async (prisma) => {
       const customerNo = await this.generateCustomerNo(prisma)
       if (customerNo == null || customerNo == undefined) {
-        throw new Error('Failed to generate customer number')
+        throw new InternalServerErrorException('Failed to generate customer number')
       }
       const hashID: string = await bcrypt.hash(req.idCard, 10)
       return await prisma.customer.create({
@@ -56,7 +56,7 @@ export class CustomerService {
 
   async findByCustomerNo(customerNo: string): Promise<CustomerResponseDto | null> {
     if (customerNo == null || customerNo == undefined) {
-      throw new Error('customerNo is required')
+      throw new InternalServerErrorException('customerNo is required')
     }
 
     const res: Customer | null = await this.prisma.customer.findUnique({

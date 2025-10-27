@@ -43,7 +43,7 @@ export class PermissionsGuard implements CanActivate {
     if (dbUser.roleId === 1) return true //admin bypass
 
     const userPermissions = dbUser.role.permissions.map((perm) => perm.permissionName)
-    const hasPermission = requiredPermission.every((perm) => userPermissions.includes(perm))
+    const hasPermission = requiredPermission.some((perm) => userPermissions.includes(perm))
 
     if (!hasPermission) {
       throw ResponseUtils.forbideden()

@@ -25,14 +25,12 @@ export class MenuController {
 
   @Get()
   async getMenu(@User() user: JwtPayload) {
-    console.log('######################## get Menu user:', user)
     const username: string = user.sub
     if (!username) {
       return ResponseUtils.error('ไม่พบ User Role')
     } else {
       const res = await this.menuService.getMenuByRole(username)
-      console.log('######################## get Menu res:', res)
-      return ResponseUtils.success(plainToInstance(ResponseUserDto, res), ResponseMessage.SUCCESS)
+      return ResponseUtils.success(plainToInstance(ResponseUserDto, res), ResponseMessage.OK)
     }
   }
 }

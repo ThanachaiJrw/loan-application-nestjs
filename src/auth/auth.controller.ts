@@ -31,7 +31,7 @@ export class AuthController {
   async logout(@User('sub') username: string) {
     if (username) {
       await this.authService.logout(username)
-      return ResponseUtils.success(null, ResponseMessage.SUCCESS)
+      return ResponseUtils.success(null, ResponseMessage.OK)
     } else {
       return ResponseUtils.error('Invalid user')
     }
@@ -44,5 +44,16 @@ export class AuthController {
     @Body('newPassword') newPassword: string,
   ) {
     return this.authService.resetPassword(username, newPassword)
+  }
+
+  // validate access token for App Initializer
+  @Post('validate')
+  async validateToken(@Body('token') token: string) {
+    const response = await this.authService.validateToken(token)
+    if (response) {
+      return ResponseUtils.success({ valid: true }, ResponseMessage.OK)
+    } else {
+      return ResponseUtils.error('Token invalid or expired')
+    }
   }
 }

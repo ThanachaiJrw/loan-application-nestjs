@@ -4,7 +4,7 @@ import { Expose } from 'class-transformer'
 export class MenuDto {
   @ApiProperty()
   @Expose({ name: 'menu_label' })
-  menuLabel: string
+  label: string
 
   @ApiProperty()
   @Expose({ name: 'route' })

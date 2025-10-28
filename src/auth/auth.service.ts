@@ -126,4 +126,29 @@ export class AuthService {
 
     return { message: 'Password reset successfully' }
   }
+
+  async validateToken(token: string): Promise<boolean> {
+    try {
+      // 1. verify token (will throw if invalid)
+      const decoded: JwtPayload = await this.jwtService.verifyAsync<JwtPayload>(token, {
+        secret: process.env.JWT_ACCESS_SECRET || 'accessSecret',
+      })
+
+      // 2. check if the user still exists
+      const user = await this.prisma.user.findFirst({ where: { username: decoded.sub } })
+      if (!user) {
+        return false
+      }
+
+      // 3. (optional) check blacklist / revoked token
+      // if (await this.tokenBlacklistService.isRevoked(token)) {
+      //   return false;
+      // }
+
+      return true
+    } catch (err) {
+      // token invalid or expired
+      return false
+    }
+  }
 }
